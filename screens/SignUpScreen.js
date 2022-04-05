@@ -10,11 +10,14 @@ import {
   StyleSheet,
   ScrollView,
   StatusBar,
+  Alert,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import {useNavigation} from '@react-navigation/native';
+import {baseUrl} from '../api/url';
 
 const SignInScreen = ({navigation}) => {
   const [data, setData] = React.useState({
@@ -24,20 +27,25 @@ const SignInScreen = ({navigation}) => {
     check_textInputChange: false,
     secureTextEntry: true,
     confirm_secureTextEntry: true,
+    isValidUser: true,
   });
 
+  // const navigation = useNavigation();
+
   const textInputChange = val => {
-    if (val.length !== 0) {
+    if (val.trim().length >= 4) {
       setData({
         ...data,
         username: val,
         check_textInputChange: true,
+        isValidUser: true,
       });
     } else {
       setData({
         ...data,
         username: val,
         check_textInputChange: false,
+        isValidUser: false,
       });
     }
   };
@@ -70,6 +78,44 @@ const SignInScreen = ({navigation}) => {
     });
   };
 
+  const registerHandle = async (userName, password, confrmPassword) => {
+    // console.log('Username - ', userName);
+    // console.log('password - ', password);
+
+    if (userName.length == 0 || password.length == 0) {
+      return Alert.alert('Please enter all the data');
+    }
+
+    if (password != confrmPassword) {
+      return Alert.alert('Password and confirm password are not same!');
+    }
+
+    await fetch(`${baseUrl}/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: userName,
+        password: password,
+      }),
+    })
+      .then(res => res.json())
+      .then(response => {
+        // console.log(response);
+        if (response.err) {
+          return Alert.alert(response.err);
+        }
+
+        navigation.navigate('SignInScreen');
+        // signIn(response);
+      })
+      .catch(err => {
+        // console.log(err);
+        return Alert.alert('Something went wrong in signIn');
+      });
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#FF6347" barStyle="light-content" />
@@ -93,6 +139,13 @@ const SignInScreen = ({navigation}) => {
               </Animatable.View>
             ) : null}
           </View>
+          {data.isValidUser ? null : (
+            <Animatable.View animation="fadeInLeft" duration={500}>
+              <Text style={styles.errorMsg}>
+                Username must be 4 characters long.
+              </Text>
+            </Animatable.View>
+          )}
 
           <Text
             style={[
@@ -162,7 +215,15 @@ const SignInScreen = ({navigation}) => {
             </Text>
           </View>
           <View style={styles.button}>
-            <TouchableOpacity style={styles.signIn} onPress={() => {}}>
+            <TouchableOpacity
+              style={styles.signIn}
+              onPress={() => {
+                registerHandle(
+                  data.username,
+                  data.password,
+                  data.confirm_password,
+                );
+              }}>
               <LinearGradient
                 colors={['#FFA07A', '#FF6347']}
                 style={styles.signIn}>
@@ -270,5 +331,9 @@ const styles = StyleSheet.create({
   },
   color_textPrivate: {
     color: 'grey',
+  },
+  errorMsg: {
+    color: '#FF0000',
+    fontSize: 14,
   },
 });
