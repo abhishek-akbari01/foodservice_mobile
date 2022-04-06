@@ -20,7 +20,10 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import {markers, mapDarkStyle, mapStandardStyle} from '../model/mapData';
 import StarRating from '../components/StarRating';
 
-import {useTheme} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
+import {FlatList} from 'react-native-gesture-handler';
+import {data} from '../model/data';
+import {Card} from 'react-native-paper';
 
 const {width, height} = Dimensions.get('window');
 const CARD_HEIGHT = 220;
@@ -29,6 +32,7 @@ const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
 const ExploreScreen = () => {
   const theme = useTheme();
+  const navigation = useNavigation();
 
   const initialMapState = {
     markers,
@@ -142,9 +146,53 @@ const ExploreScreen = () => {
   const _map = React.useRef(null);
   const _scrollView = React.useRef(null);
 
+  const renderItem = ({item}) => {
+    console.log(item);
+    return (
+      // <Card
+      //   itemData={item}
+      //   onPress={() => navigation.navigate('CardItemDetails', {itemData: item})}
+      // />
+      // <Text>Hello</Text>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('CardItemDetails', {itemData: item})
+        }>
+        <View style={styles.card}>
+          <View style={styles.cardImgWrapper}>
+            <Image
+              source={item.image}
+              resizeMode="cover"
+              style={styles.cardImg}
+            />
+          </View>
+          <View style={styles.cardInfo}>
+            <Text style={styles.cardTitle}>{item.title}</Text>
+            <StarRating ratings={item.ratings} reviews={item.reviews} />
+            <Text numberOfLines={2} style={styles.cardDetails}>
+              {item.description}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
-    <View style={styles.container}>
-      {/* <MapView
+    <View style={{flex: 1}}>
+      <View style={styles.header}>
+        <Text
+          style={{
+            color: 'white',
+            alignSelf: 'center',
+            fontSize: 20,
+            fontWeight: 'bold',
+          }}>
+          Explore
+        </Text>
+      </View>
+      <View style={styles.container}>
+        {/* <MapView
         ref={_map}
         initialRegion={state.region}
         style={styles.container}
@@ -172,7 +220,7 @@ const ExploreScreen = () => {
           );
         })}
       </MapView> */}
-      <View style={styles.searchBox}>
+        {/* <View style={styles.searchBox}>
         <TextInput
           placeholder="Search here"
           placeholderTextColor="#000"
@@ -180,8 +228,8 @@ const ExploreScreen = () => {
           style={{flex: 1, padding: 0}}
         />
         <Ionicons name="ios-search" size={20} />
-      </View>
-      <View style={styles.cardsWrapper}>
+      </View> */}
+        {/* <View style={styles.cardsWrapper}> */}
         {/* <Text
           style={{
             alignSelf: 'center',
@@ -191,8 +239,15 @@ const ExploreScreen = () => {
           }}>
           Recently Viewed
         </Text> */}
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.card}>
+        {/* <ScrollView showsVerticalScrollIndicator={false}> */}
+
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        />
+
+        {/* <View style={styles.card}>
             <View style={styles.cardImgWrapper}>
               <Image
                 source={require('../assets/banners/food-banner2.jpg')}
@@ -287,10 +342,10 @@ const ExploreScreen = () => {
                 Amazing description for this food
               </Text>
             </View>
-          </View>
-        </ScrollView>
-      </View>
-      {/* <ScrollView
+          </View> */}
+        {/* </ScrollView> */}
+        {/* </View> */}
+        {/* <ScrollView
         horizontal
         scrollEventThrottle={1}
         showsHorizontalScrollIndicator={false}
@@ -313,7 +368,7 @@ const ExploreScreen = () => {
           </TouchableOpacity>
         ))}
       </ScrollView> */}
-      {/* <Animated.ScrollView
+        {/* <Animated.ScrollView
         ref={_scrollView}
         horizontal
         pagingEnabled
@@ -384,6 +439,7 @@ const ExploreScreen = () => {
           </View>
         ))}
       </Animated.ScrollView> */}
+      </View>
     </View>
   );
 };
@@ -393,6 +449,13 @@ export default ExploreScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '90%',
+    alignSelf: 'center',
+  },
+  header: {
+    backgroundColor: '#d02860',
+    height: 40,
+    justifyContent: 'center',
   },
   searchBox: {
     position: 'absolute',

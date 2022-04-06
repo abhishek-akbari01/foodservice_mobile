@@ -34,6 +34,7 @@ import RootStackScreen from './screens/RootStackScreen';
 
 import AsyncStorage from '@react-native-community/async-storage';
 import AdminTabScreen from './screens/admin/AdminTabScreen';
+import CartScreen from './screens/CartScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -81,6 +82,7 @@ const App = () => {
         return {
           ...prevState,
           userToken: action.token,
+          role: action.role,
           isLoading: false,
         };
       case 'LOGIN':
@@ -132,6 +134,7 @@ const App = () => {
         try {
           await AsyncStorage.setItem('userToken', userToken);
           await AsyncStorage.setItem('userId', userId);
+          await AsyncStorage.setItem('role', role.toString());
         } catch (e) {
           console.log(e);
         }
@@ -150,6 +153,7 @@ const App = () => {
         try {
           await AsyncStorage.removeItem('userToken');
           await AsyncStorage.removeItem('userId');
+          await AsyncStorage.removeItem('role');
         } catch (e) {
           console.log(e);
         }
@@ -170,14 +174,19 @@ const App = () => {
     setTimeout(async () => {
       // setIsLoading(false);
       let userToken;
+      let role;
       userToken = null;
+      role = null;
       try {
         userToken = await AsyncStorage.getItem('userToken');
+        role = await AsyncStorage.getItem('role');
+        console.log('usertoken - ', userToken);
+        console.log('role - ', role);
       } catch (e) {
         console.log(e);
       }
       // console.log('user token: ', userToken);
-      dispatch({type: 'RETRIEVE_TOKEN', token: userToken});
+      dispatch({type: 'RETRIEVE_TOKEN', token: userToken, role: role});
     }, 1000);
   }, []);
 
@@ -199,6 +208,7 @@ const App = () => {
               <Drawer.Screen name="SupportScreen" component={SupportScreen} />
               <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
               <Drawer.Screen name="BookmarkScreen" component={BookmarkScreen} />
+              <Drawer.Screen name="CartScreen" component={CartScreen} />
             </Drawer.Navigator>
           ) : loginState.userToken !== null && loginState.role == 1 ? (
             <AdminTabScreen />

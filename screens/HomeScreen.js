@@ -16,6 +16,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import StarRating from '../components/StarRating';
+import {data} from '../model/data';
+import Card from '../components/Card';
 
 const HomeScreen = ({navigation}) => {
   const theme = useTheme();
@@ -97,7 +99,25 @@ const HomeScreen = ({navigation}) => {
           }}>
           Recently Viewed
         </Text>
-        <View style={styles.card}>
+        <Card
+          itemData={data[0]}
+          onPress={() =>
+            navigation.navigate('CardItemDetails', {itemData: data[0]})
+          }
+        />
+        <Card
+          itemData={data[1]}
+          onPress={() =>
+            navigation.navigate('CardItemDetails', {itemData: data[1]})
+          }
+        />
+        <Card
+          itemData={data[2]}
+          onPress={() =>
+            navigation.navigate('CardItemDetails', {itemData: data[2]})
+          }
+        />
+        {/* <View style={styles.card}>
           <View style={styles.cardImgWrapper}>
             <Image
               source={require('../assets/banners/food-banner2.jpg')}
@@ -112,8 +132,8 @@ const HomeScreen = ({navigation}) => {
               Amazing description for this food
             </Text>
           </View>
-        </View>
-        <View style={styles.card}>
+        </View> */}
+        {/* <View style={styles.card}>
           <View style={styles.cardImgWrapper}>
             <Image
               source={require('../assets/banners/food-banner3.jpg')}
@@ -144,7 +164,7 @@ const HomeScreen = ({navigation}) => {
               Amazing description for this food
             </Text>
           </View>
-        </View>
+        </View> */}
       </View>
     </ScrollView>
   );

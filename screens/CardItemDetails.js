@@ -15,6 +15,8 @@ import HeaderImageScrollView, {
 import * as Animatable from 'react-native-animatable';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
 
 const MIN_HEIGHT = Platform.OS === 'ios' ? 90 : 55;
 const MAX_HEIGHT = 350;
@@ -22,6 +24,8 @@ const MAX_HEIGHT = 350;
 const CardItemDetails = ({route}) => {
   const itemData = route.params.itemData;
   const navTitleView = useRef(null);
+
+  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -59,6 +63,11 @@ const CardItemDetails = ({route}) => {
         </TriggeringView>
         <View style={[styles.section, styles.sectionLarge]}>
           <Text style={styles.sectionContent}>{itemData.description}</Text>
+          <TouchableOpacity
+            style={styles.addCart}
+            onPress={() => navigation.navigate('CartScreen')}>
+            <Text style={styles.addCartTxt}>Add to Cart</Text>
+          </TouchableOpacity>
         </View>
       </HeaderImageScrollView>
     </View>
@@ -141,5 +150,16 @@ const styles = StyleSheet.create({
   },
   sectionLarge: {
     minHeight: 300,
+  },
+  addCart: {
+    backgroundColor: 'orange',
+    padding: 5,
+    borderRadius: 15,
+  },
+  addCartTxt: {
+    color: '#fff',
+    fontSize: 21,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
