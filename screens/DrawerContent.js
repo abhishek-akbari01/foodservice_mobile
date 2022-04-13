@@ -64,9 +64,9 @@ export function DrawerContent(props) {
               icon={({color, size}) => (
                 <Icon name="bookmark-outline" color={color} size={size} />
               )}
-              label="Bookmarks"
+              label="CartScreen"
               onPress={() => {
-                props.navigation.navigate('BookmarkScreen');
+                props.navigation.navigate('CartScreen', {itemData: 213216515});
               }}
             />
             <DrawerItem

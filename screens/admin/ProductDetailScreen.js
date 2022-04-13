@@ -14,36 +14,29 @@ import HeaderImageScrollView, {
 } from 'react-native-image-header-scroll-view';
 
 import * as Animatable from 'react-native-animatable';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {baseUrl, imgUrl} from '../../api/url';
 import {useNavigation} from '@react-navigation/native';
-import {baseUrl, imgUrl} from '../api/url';
-import AsyncStorage from '@react-native-community/async-storage';
 
 const MIN_HEIGHT = Platform.OS === 'ios' ? 90 : 55;
 const MAX_HEIGHT = 350;
 
-const CardItemDetails = ({route}) => {
+const ProductDetailScreen = ({route}) => {
   const itemData = route.params.itemData;
+  const navigation = useNavigation();
+  console.log(itemData);
   const navTitleView = useRef(null);
 
-  const navigation = useNavigation();
-
-  const addCart = async itemId => {
-    const userId = await AsyncStorage.getItem('userId');
-    console.log('item id - ', itemId);
-    console.log('user id - ', userId);
-
-    await fetch(`${baseUrl}/addToCart/${userId}/${itemId}`, {method: 'PUT'})
+  const deleteProduct = productId => {
+    fetch(`${baseUrl}/admin/deleteProduct/${productId}`, {method: 'DELETE'})
       .then(res => res.json())
       .then(res => {
         if (res.err) return Alert.alert(res.err);
-        // console.log(res);
-        navigation.navigate('CartScreen', {itemData: itemId});
+        navigation.navigate('AdminOrderScreen');
       })
       .catch(err => {
-        return Alert.alert('Something went wrong in add to cart front');
+        return Alert.alert('something went wrong');
       });
   };
 
@@ -92,10 +85,15 @@ const CardItemDetails = ({route}) => {
           <Text style={styles.sectionContent}>{itemData.description}</Text>
           <TouchableOpacity
             style={styles.addCart}
-            onPress={() => {
-              addCart(itemData._id);
-            }}>
-            <Text style={styles.addCartTxt}>Add to Cart</Text>
+            onPress={() =>
+              navigation.navigate('EditProductScreen', {itemData: itemData})
+            }>
+            <Text style={styles.addCartTxt}>Edit Product</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.addCart}
+            onPress={() => deleteProduct(itemData._id)}>
+            <Text style={styles.addCartTxt}>Delete Product</Text>
           </TouchableOpacity>
         </View>
       </HeaderImageScrollView>
@@ -103,7 +101,7 @@ const CardItemDetails = ({route}) => {
   );
 };
 
-export default CardItemDetails;
+export default ProductDetailScreen;
 
 const styles = StyleSheet.create({
   container: {

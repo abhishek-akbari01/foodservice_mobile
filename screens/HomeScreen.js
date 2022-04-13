@@ -58,9 +58,7 @@ const HomeScreen = ({navigation}) => {
       <View style={styles.categoryContainer}>
         <TouchableOpacity
           style={styles.categoryBtn}
-          onPress={() =>
-            navigation.navigate('CardListScreen', {title: 'Restaurant'})
-          }>
+          onPress={() => navigation.navigate('CardListScreen', {category: 0})}>
           <View style={styles.categoryIcon}>
             <Ionicons name="ios-restaurant" size={35} color="#FF6347" />
           </View>
@@ -68,9 +66,7 @@ const HomeScreen = ({navigation}) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.categoryBtn}
-          onPress={() =>
-            navigation.navigate('CardListScreen', {title: 'Cold-Drinks'})
-          }>
+          onPress={() => navigation.navigate('CardListScreen', {category: 1})}>
           <View style={styles.categoryIcon}>
             <MaterialCommunityIcons
               name="food-fork-drink"
@@ -80,7 +76,9 @@ const HomeScreen = ({navigation}) => {
           </View>
           <Text style={styles.categoryBtnTxt}>Cold-Drinks</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.categoryBtn} onPress={() => {}}>
+        <TouchableOpacity
+          style={styles.categoryBtn}
+          onPress={() => navigation.navigate('CardListScreen', {category: 2})}>
           <View style={styles.categoryIcon}>
             <MaterialCommunityIcons name="food" size={35} color="#FF6347" />
           </View>
@@ -97,7 +95,7 @@ const HomeScreen = ({navigation}) => {
             fontWeight: 'bold',
             color: '#333',
           }}>
-          Recently Viewed
+          Recently Purchased
         </Text>
         <Card
           itemData={data[0]}
@@ -117,54 +115,6 @@ const HomeScreen = ({navigation}) => {
             navigation.navigate('CardItemDetails', {itemData: data[2]})
           }
         />
-        {/* <View style={styles.card}>
-          <View style={styles.cardImgWrapper}>
-            <Image
-              source={require('../assets/banners/food-banner2.jpg')}
-              resizeMode="cover"
-              style={styles.cardImg}
-            />
-          </View>
-          <View style={styles.cardInfo}>
-            <Text style={styles.cardTitle}>Burger</Text>
-            <StarRating ratings={4} reviews={99} />
-            <Text style={styles.cardDetails}>
-              Amazing description for this food
-            </Text>
-          </View>
-        </View> */}
-        {/* <View style={styles.card}>
-          <View style={styles.cardImgWrapper}>
-            <Image
-              source={require('../assets/banners/food-banner3.jpg')}
-              resizeMode="cover"
-              style={styles.cardImg}
-            />
-          </View>
-          <View style={styles.cardInfo}>
-            <Text style={styles.cardTitle}>Pizza</Text>
-            <StarRating ratings={4} reviews={99} />
-            <Text style={styles.cardDetails}>
-              Amazing description for this food
-            </Text>
-          </View>
-        </View>
-        <View style={styles.card}>
-          <View style={styles.cardImgWrapper}>
-            <Image
-              source={require('../assets/banners/food-banner4.jpg')}
-              resizeMode="cover"
-              style={styles.cardImg}
-            />
-          </View>
-          <View style={styles.cardInfo}>
-            <Text style={styles.cardTitle}>Pasta</Text>
-            <StarRating ratings={4} reviews={99} />
-            <Text style={styles.cardDetails}>
-              Amazing description for this food
-            </Text>
-          </View>
-        </View> */}
       </View>
     </ScrollView>
   );

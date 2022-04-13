@@ -8,6 +8,9 @@ import {useTheme} from 'react-native-paper';
 
 import AdminHomeScreen from './AdminHomeScreen';
 import AdminOrderScreen from './AdminOrderScreen';
+import ProductDetailScreen from './ProductDetailScreen';
+import EditProductScreen from './EditProductScreen';
+import AddProductScreen from './AddProductScreen';
 
 const HomeStack = createStackNavigator();
 const OrderStack = createStackNavigator();
@@ -36,10 +39,10 @@ const AdminTabScreen = () => (
       name="OrderScreen"
       component={OrderStackScreen}
       options={{
-        tabBarLabel: 'Updates',
+        tabBarLabel: 'Items',
         tabBarColor: '#FF6347',
         tabBarIcon: ({color}) => (
-          <Icon name="ios-notifications" color={color} size={26} />
+          <Icon name="ios-menu" color={color} size={26} />
         ),
       }}
     />
@@ -86,6 +89,31 @@ const HomeStackScreen = ({navigation}) => {
           //     onPress={() => navigation.openDrawer()}
           //   />
           // ),
+        }}
+      />
+      <OrderStack.Screen
+        name="ProductDetailScreen"
+        component={ProductDetailScreen}
+        options={({route}) => ({
+          // title: route.params.title,
+          headerBackTitleVisible: false,
+          headerTitle: false,
+          headerTransparent: true,
+          headerTintColor: '#fff',
+        })}
+      />
+      <OrderStack.Screen
+        name="EditProductScreen"
+        component={EditProductScreen}
+        options={{
+          title: 'SCET CANTEEN',
+        }}
+      />
+      <OrderStack.Screen
+        name="AddProductScreen"
+        component={AddProductScreen}
+        options={{
+          title: 'SCET CANTEEN',
         }}
       />
     </OrderStack.Navigator>

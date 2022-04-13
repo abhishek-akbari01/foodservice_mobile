@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  Alert,
 } from 'react-native';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 
@@ -22,8 +23,9 @@ import StarRating from '../components/StarRating';
 
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {FlatList} from 'react-native-gesture-handler';
-import {data} from '../model/data';
-import {Card} from 'react-native-paper';
+// import {data} from '../model/data';
+import {ActivityIndicator, Card} from 'react-native-paper';
+import {baseUrl, imgUrl} from '../api/url';
 
 const {width, height} = Dimensions.get('window');
 const CARD_HEIGHT = 220;
@@ -83,6 +85,7 @@ const ExploreScreen = () => {
   };
 
   const [state, setState] = React.useState(initialMapState);
+  const [data, setData] = React.useState();
 
   let mapIndex = 0;
   let mapAnimation = new Animated.Value(0);
@@ -146,8 +149,25 @@ const ExploreScreen = () => {
   const _map = React.useRef(null);
   const _scrollView = React.useRef(null);
 
+  useEffect(() => {
+    fetch(`${baseUrl}/getAllProduct`, {
+      method: 'GET',
+    })
+      .then(res => res.json())
+      .then(res => {
+        // console.log('res - ', res[2]);
+        if (res.err) {
+          return Alert.alert(res.err);
+        }
+        setData(res);
+      })
+      .catch(err => {
+        return Alert.alert('Something went wrong on getting food items');
+      });
+  }, []);
+
   const renderItem = ({item}) => {
-    console.log(item);
+    // console.log(item);
     return (
       // <Card
       //   itemData={item}
@@ -155,20 +175,23 @@ const ExploreScreen = () => {
       // />
       // <Text>Hello</Text>
       <TouchableOpacity
+        key={item._id}
         onPress={() =>
           navigation.navigate('CardItemDetails', {itemData: item})
         }>
         <View style={styles.card}>
           <View style={styles.cardImgWrapper}>
             <Image
-              source={item.image}
+              source={{
+                uri: `${imgUrl}/${item.photo}`,
+              }}
               resizeMode="cover"
               style={styles.cardImg}
             />
           </View>
           <View style={styles.cardInfo}>
-            <Text style={styles.cardTitle}>{item.title}</Text>
-            <StarRating ratings={item.ratings} reviews={item.reviews} />
+            <Text style={styles.cardTitle}>{item.title.toUpperCase()}</Text>
+            <StarRating ratings={3} reviews={3} />
             <Text numberOfLines={2} style={styles.cardDetails}>
               {item.description}
             </Text>
@@ -177,6 +200,14 @@ const ExploreScreen = () => {
       </TouchableOpacity>
     );
   };
+
+  if (data == null) {
+    return (
+      <View style={{justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   return (
     <View style={{flex: 1}}>
@@ -192,253 +223,12 @@ const ExploreScreen = () => {
         </Text>
       </View>
       <View style={styles.container}>
-        {/* <MapView
-        ref={_map}
-        initialRegion={state.region}
-        style={styles.container}
-        provider={PROVIDER_GOOGLE}
-        customMapStyle={theme.dark ? mapDarkStyle : mapStandardStyle}
-      >
-        {state.markers.map((marker, index) => {
-          const scaleStyle = {
-            transform: [
-              {
-                scale: interpolations[index].scale,
-              },
-            ],
-          };
-          return (
-            <MapView.Marker key={index} coordinate={marker.coordinate} onPress={(e)=>onMarkerPress(e)}>
-              <Animated.View style={[styles.markerWrap]}>
-                <Animated.Image
-                  source={require('../assets/map_marker.png')}
-                  style={[styles.marker, scaleStyle]}
-                  resizeMode="cover"
-                />
-              </Animated.View>
-            </MapView.Marker>
-          );
-        })}
-      </MapView> */}
-        {/* <View style={styles.searchBox}>
-        <TextInput
-          placeholder="Search here"
-          placeholderTextColor="#000"
-          autoCapitalize="none"
-          style={{flex: 1, padding: 0}}
-        />
-        <Ionicons name="ios-search" size={20} />
-      </View> */}
-        {/* <View style={styles.cardsWrapper}> */}
-        {/* <Text
-          style={{
-            alignSelf: 'center',
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: '#333',
-          }}>
-          Recently Viewed
-        </Text> */}
-        {/* <ScrollView showsVerticalScrollIndicator={false}> */}
-
         <FlatList
           data={data}
           renderItem={renderItem}
           keyExtractor={item => item.id}
+          showsVerticalScrollIndicator={false}
         />
-
-        {/* <View style={styles.card}>
-            <View style={styles.cardImgWrapper}>
-              <Image
-                source={require('../assets/banners/food-banner2.jpg')}
-                resizeMode="cover"
-                style={styles.cardImg}
-              />
-            </View>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Burger</Text>
-              <StarRating ratings={4} reviews={99} />
-              <Text style={styles.cardDetails}>
-                Amazing description for this food
-              </Text>
-            </View>
-          </View>
-          <View style={styles.card}>
-            <View style={styles.cardImgWrapper}>
-              <Image
-                source={require('../assets/banners/food-banner3.jpg')}
-                resizeMode="cover"
-                style={styles.cardImg}
-              />
-            </View>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Pizza</Text>
-              <StarRating ratings={4} reviews={99} />
-              <Text style={styles.cardDetails}>
-                Amazing description for this food
-              </Text>
-            </View>
-          </View>
-          <View style={styles.card}>
-            <View style={styles.cardImgWrapper}>
-              <Image
-                source={require('../assets/banners/food-banner4.jpg')}
-                resizeMode="cover"
-                style={styles.cardImg}
-              />
-            </View>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Pasta</Text>
-              <StarRating ratings={4} reviews={99} />
-              <Text style={styles.cardDetails}>
-                Amazing description for this food
-              </Text>
-            </View>
-          </View>
-          <View style={styles.card}>
-            <View style={styles.cardImgWrapper}>
-              <Image
-                source={require('../assets/banners/food-banner2.jpg')}
-                resizeMode="cover"
-                style={styles.cardImg}
-              />
-            </View>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Burger</Text>
-              <StarRating ratings={4} reviews={99} />
-              <Text style={styles.cardDetails}>
-                Amazing description for this food
-              </Text>
-            </View>
-          </View>
-          <View style={styles.card}>
-            <View style={styles.cardImgWrapper}>
-              <Image
-                source={require('../assets/banners/food-banner3.jpg')}
-                resizeMode="cover"
-                style={styles.cardImg}
-              />
-            </View>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Pizza</Text>
-              <StarRating ratings={4} reviews={99} />
-              <Text style={styles.cardDetails}>
-                Amazing description for this food
-              </Text>
-            </View>
-          </View>
-          <View style={styles.card}>
-            <View style={styles.cardImgWrapper}>
-              <Image
-                source={require('../assets/banners/food-banner4.jpg')}
-                resizeMode="cover"
-                style={styles.cardImg}
-              />
-            </View>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Pasta</Text>
-              <StarRating ratings={4} reviews={99} />
-              <Text style={styles.cardDetails}>
-                Amazing description for this food
-              </Text>
-            </View>
-          </View> */}
-        {/* </ScrollView> */}
-        {/* </View> */}
-        {/* <ScrollView
-        horizontal
-        scrollEventThrottle={1}
-        showsHorizontalScrollIndicator={false}
-        height={50}
-        style={styles.chipsScrollView}
-        contentInset={{
-          // iOS only
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 20,
-        }}
-        contentContainerStyle={{
-          paddingRight: Platform.OS === 'android' ? 20 : 0,
-        }}>
-        {state.categories.map((category, index) => (
-          <TouchableOpacity key={index} style={styles.chipsItem}>
-            {category.icon}
-            <Text>{category.name}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView> */}
-        {/* <Animated.ScrollView
-        ref={_scrollView}
-        horizontal
-        pagingEnabled
-        scrollEventThrottle={1}
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={CARD_WIDTH + 20}
-        snapToAlignment="center"
-        style={styles.scrollView}
-        contentInset={{
-          top: 0,
-          left: SPACING_FOR_CARD_INSET,
-          bottom: 0,
-          right: SPACING_FOR_CARD_INSET,
-        }}
-        contentContainerStyle={{
-          paddingHorizontal:
-            Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0,
-        }}
-        onScroll={Animated.event(
-          [
-            {
-              nativeEvent: {
-                contentOffset: {
-                  x: mapAnimation,
-                },
-              },
-            },
-          ],
-          {useNativeDriver: true},
-        )}>
-        {state.markers.map((marker, index) => (
-          <View style={styles.card} key={index}>
-            <Image
-              source={marker.image}
-              style={styles.cardImage}
-              resizeMode="cover"
-            />
-            <View style={styles.textContent}>
-              <Text numberOfLines={1} style={styles.cardtitle}>
-                {marker.title}
-              </Text>
-              <StarRating ratings={marker.rating} reviews={marker.reviews} />
-              <Text numberOfLines={1} style={styles.cardDescription}>
-                {marker.description}
-              </Text>
-              <View style={styles.button}>
-                <TouchableOpacity
-                  onPress={() => {}}
-                  style={[
-                    styles.signIn,
-                    {
-                      borderColor: '#FF6347',
-                      borderWidth: 1,
-                    },
-                  ]}>
-                  <Text
-                    style={[
-                      styles.textSign,
-                      {
-                        color: '#FF6347',
-                      },
-                    ]}>
-                    Order Now
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        ))}
-      </Animated.ScrollView> */}
       </View>
     </View>
   );

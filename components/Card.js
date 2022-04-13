@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {imgUrl} from '../api/url';
 
 import StarRating from './StarRating';
 
@@ -9,7 +10,9 @@ const Card = ({itemData, onPress}) => {
       <View style={styles.card}>
         <View style={styles.cardImgWrapper}>
           <Image
-            source={itemData.image}
+            source={{
+              uri: `${imgUrl}/${itemData.photo}`,
+            }}
             resizeMode="cover"
             style={styles.cardImg}
           />

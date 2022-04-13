@@ -1,9 +1,120 @@
-import {View, Text, Image, StyleSheet} from 'react-native';
-import React from 'react';
+import {View, Text, Image, StyleSheet, Alert} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import StarRating from '../components/StarRating';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-community/async-storage';
+import {baseUrl, imgUrl} from '../api/url';
+import {ActivityIndicator} from 'react-native-paper';
 
-const CartScreen = () => {
+const CartScreen = ({route}) => {
+  const [data, setData] = useState();
+  const change = route.params.itemData;
+  // console.log('skdg - ', change);
+  let total = 0;
+
+  useEffect(() => {
+    // console.log('screen called');
+    getCartProducts();
+  }, [change]);
+
+  const getCartProducts = async () => {
+    const userId = await AsyncStorage.getItem('userId');
+    // console.log(userId);
+    await fetch(`${baseUrl}/getCartItems/${userId}`, {method: 'GET'})
+      .then(res => res.json())
+      .then(res => {
+        // console.log('ressd - ', res[0].addCart);
+        if (res.err) return Alert.alert(res.err);
+        setData(res[0].addCart);
+      })
+      .catch(err => {
+        return Alert.alert('Something went wrong in cart list');
+      });
+  };
+
+  const placeOrder = async () => {
+    // console.log(data);
+    const userId = await AsyncStorage.getItem('userId');
+    await fetch(`${baseUrl}/placeOrder/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then(res => res.json())
+      .then(res => {
+        // console.log(res);
+        if (res.err) return Alert.alert(res.err);
+        getCartProducts();
+      })
+      .catch(err => {
+        return Alert.alert('Something went wrong!');
+      });
+  };
+
+  const renderItem = ({item}) => {
+    total = total + item.price;
+    return (
+      <View
+        key={item._id}
+        style={{
+          backgroundColor: '#ffffff',
+          shadowColor: '#000',
+          shadowOffset: {width: 0, height: 6},
+          shadowOpacity: 0.39,
+          shadowRadius: 8.3,
+          elevation: 13,
+          borderRadius: 10,
+          // paddingHorizontal: '4%',
+          // paddingTop: '3%',
+          marginVertical: '2%',
+          // marginHorizontal: '3%',
+        }}>
+        <View style={styles.card}>
+          <View style={styles.cardImgWrapper}>
+            <Image
+              source={{
+                uri: `${imgUrl}/${item.photo}`,
+              }}
+              resizeMode="cover"
+              style={styles.cardImg}
+            />
+          </View>
+          <View style={styles.cardInfo}>
+            <Text style={styles.cardTitle}>{item.title}</Text>
+            <StarRating ratings={3} reviews={3} />
+          </View>
+          <View
+            style={{
+              flex: 0.8,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: 20,
+            }}>
+            <Text style={{fontSize: 25}}>{item.price} RS</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  const getTotal = () => {
+    data.forEach(element => {
+      // console.log('sudgfhj', element.price);
+      total = total + element.price;
+    });
+    return total;
+  };
+
+  if (data == undefined) {
+    return (
+      <View>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
   return (
     <View style={{flex: 1}}>
       <View
@@ -18,117 +129,17 @@ const CartScreen = () => {
         </Text>
       </View>
       <View style={{flex: 1, width: '90%', alignSelf: 'center'}}>
-        <View
-          style={{
-            backgroundColor: '#ffffff',
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 6},
-            shadowOpacity: 0.39,
-            shadowRadius: 8.3,
-            elevation: 13,
-            borderRadius: 10,
-            // paddingHorizontal: '4%',
-            // paddingTop: '3%',
-            marginVertical: '2%',
-            // marginHorizontal: '3%',
-          }}>
-          <View style={styles.card}>
-            <View style={styles.cardImgWrapper}>
-              <Image
-                source={require('../assets/banners/food-banner4.jpg')}
-                resizeMode="cover"
-                style={styles.cardImg}
-              />
-            </View>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Pasta</Text>
-              <StarRating ratings={4} reviews={99} />
-            </View>
-            <View
-              style={{
-                flex: 0.8,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 20,
-              }}>
-              <Text style={{fontSize: 25}}>35 RS</Text>
-            </View>
+        {data.length == 0 && (
+          <View style={{alignItems: 'center', justifyContent: 'center'}}>
+            <Text>Empty Cart</Text>
           </View>
-        </View>
-        <View
-          style={{
-            backgroundColor: '#ffffff',
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 6},
-            shadowOpacity: 0.39,
-            shadowRadius: 8.3,
-            elevation: 13,
-            borderRadius: 10,
-            // paddingHorizontal: '4%',
-            // paddingTop: '3%',
-            marginVertical: '2%',
-            // marginHorizontal: '3%',
-          }}>
-          <View style={styles.card}>
-            <View style={styles.cardImgWrapper}>
-              <Image
-                source={require('../assets/banners/food-banner4.jpg')}
-                resizeMode="cover"
-                style={styles.cardImg}
-              />
-            </View>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Pasta</Text>
-              <StarRating ratings={4} reviews={99} />
-            </View>
-            <View
-              style={{
-                flex: 0.8,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 20,
-              }}>
-              <Text style={{fontSize: 25}}>35 RS</Text>
-            </View>
-          </View>
-        </View>
-        <View
-          style={{
-            backgroundColor: '#ffffff',
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 6},
-            shadowOpacity: 0.39,
-            shadowRadius: 8.3,
-            elevation: 13,
-            borderRadius: 10,
-            // paddingHorizontal: '4%',
-            // paddingTop: '3%',
-            marginVertical: '2%',
-            // marginHorizontal: '3%',
-          }}>
-          <View style={styles.card}>
-            <View style={styles.cardImgWrapper}>
-              <Image
-                source={require('../assets/banners/food-banner4.jpg')}
-                resizeMode="cover"
-                style={styles.cardImg}
-              />
-            </View>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Pasta</Text>
-              <StarRating ratings={4} reviews={99} />
-            </View>
-            <View
-              style={{
-                flex: 0.8,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 20,
-              }}>
-              <Text style={{fontSize: 25}}>35 RS</Text>
-            </View>
-          </View>
-        </View>
+        )}
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
       <View
         style={{
@@ -146,10 +157,11 @@ const CartScreen = () => {
           Total:
         </Text>
         <Text style={{fontSize: 20, alignSelf: 'center', marginRight: 20}}>
-          500 RS
+          {getTotal()} RS
         </Text>
       </View>
       <TouchableOpacity
+        onPress={placeOrder}
         style={{
           backgroundColor: '#1f65ff',
           height: 45,
