@@ -11,6 +11,7 @@ import AdminOrderScreen from './AdminOrderScreen';
 import ProductDetailScreen from './ProductDetailScreen';
 import EditProductScreen from './EditProductScreen';
 import AddProductScreen from './AddProductScreen';
+import AdminProfileScreen from './AdminProfileScreen';
 
 const HomeStack = createStackNavigator();
 const OrderStack = createStackNavigator();
@@ -162,7 +163,7 @@ const ProfileStackScreen = ({navigation}) => (
     }}>
     <ProfileStack.Screen
       name="AdminHomeScreen"
-      component={AdminHomeScreen}
+      component={AdminProfileScreen}
       options={{
         title: 'SCET CANTEEN',
         // headerLeft: () => (

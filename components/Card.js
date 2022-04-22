@@ -19,7 +19,7 @@ const Card = ({itemData, onPress}) => {
         </View>
         <View style={styles.cardInfo}>
           <Text style={styles.cardTitle}>{itemData.title}</Text>
-          <StarRating ratings={itemData.ratings} reviews={itemData.reviews} />
+          <StarRating ratings={2} reviews={2} />
           <Text numberOfLines={2} style={styles.cardDetails}>
             {itemData.description}
           </Text>

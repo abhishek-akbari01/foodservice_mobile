@@ -17,6 +17,11 @@ const AdminHomeScreen = () => {
 
   useEffect(() => {
     getAllOrder();
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      getAllOrder();
+    });
+
+    return willFocusSubscription;
   }, []);
 
   const getAllOrder = async () => {

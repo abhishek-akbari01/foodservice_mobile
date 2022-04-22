@@ -26,7 +26,6 @@ import {DrawerContent} from './screens/DrawerContent';
 import MainTabScreen from './screens/MainTabScreen';
 import SupportScreen from './screens/SupportScreen';
 import SettingsScreen from './screens/SettingsScreen';
-import BookmarkScreen from './screens/BookmarkScreen';
 
 import {AuthContext} from './components/context';
 
@@ -135,6 +134,7 @@ const App = () => {
           await AsyncStorage.setItem('userToken', userToken);
           await AsyncStorage.setItem('userId', userId);
           await AsyncStorage.setItem('role', role.toString());
+          await AsyncStorage.setItem('name', userName);
         } catch (e) {
           console.log(e);
         }
@@ -207,7 +207,7 @@ const App = () => {
               <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
               <Drawer.Screen name="SupportScreen" component={SupportScreen} />
               <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
-              <Drawer.Screen name="BookmarkScreen" component={BookmarkScreen} />
+              {/* <Drawer.Screen name="BookmarkScreen" component={BookmarkScreen} /> */}
               <Drawer.Screen name="CartScreen" component={CartScreen} />
             </Drawer.Navigator>
           ) : loginState.userToken !== null && loginState.role == 1 ? (

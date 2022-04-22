@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StatusBar,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
@@ -18,9 +19,44 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import StarRating from '../components/StarRating';
 import {data} from '../model/data';
 import Card from '../components/Card';
+import {baseUrl} from '../api/url';
+import AsyncStorage from '@react-native-community/async-storage';
+import {ActivityIndicator} from 'react-native-paper';
 
 const HomeScreen = ({navigation}) => {
   const theme = useTheme();
+
+  const [item, setItem] = useState();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getRecentData();
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      getRecentData();
+    });
+
+    return willFocusSubscription;
+  }, []);
+
+  const getRecentData = async () => {
+    const userId = await AsyncStorage.getItem('userId');
+    console.log(userId);
+    await fetch(`${baseUrl}/recentOrder/${userId}`, {method: 'GET'})
+      .then(res => res.json())
+      .then(res => {
+        if (res.err) {
+          return Alert.alert(res.err);
+        }
+        console.log(res.list[0].data);
+
+        setItem(res.list[0].data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        return Alert.alert('Somwthing went wrong!!');
+      });
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -97,24 +133,18 @@ const HomeScreen = ({navigation}) => {
           }}>
           Recently Purchased
         </Text>
-        <Card
-          itemData={data[0]}
-          onPress={() =>
-            navigation.navigate('CardItemDetails', {itemData: data[0]})
-          }
-        />
-        <Card
-          itemData={data[1]}
-          onPress={() =>
-            navigation.navigate('CardItemDetails', {itemData: data[1]})
-          }
-        />
-        <Card
-          itemData={data[2]}
-          onPress={() =>
-            navigation.navigate('CardItemDetails', {itemData: data[2]})
-          }
-        />
+        {loading && <ActivityIndicator />}
+        {item &&
+          item.map(i => {
+            return (
+              <Card
+                itemData={i}
+                onPress={() =>
+                  navigation.navigate('CardItemDetails', {itemData: i})
+                }
+              />
+            );
+          })}
       </View>
     </ScrollView>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {
   useTheme,
@@ -16,11 +16,22 @@ import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {AuthContext} from '../components/context';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export function DrawerContent(props) {
   const paperTheme = useTheme();
 
   const {signOut, toggleTheme} = React.useContext(AuthContext);
+
+  const [name, setName] = useState();
+
+  useEffect(() => {
+    const getData = async () => {
+      const name = await AsyncStorage.getItem('name');
+      setName(name);
+    };
+    getData();
+  }, []);
 
   return (
     <View style={{flex: 1}}>
@@ -28,14 +39,14 @@ export function DrawerContent(props) {
         <View style={styles.drawerContent}>
           <View style={styles.userInfoSection}>
             <View style={{flexDirection: 'row', marginTop: 15}}>
-              <Avatar.Image
+              {/* <Avatar.Image
                 source={{
                   uri: 'https://api.adorable.io/avatars/50/abott@adorable.png',
                 }}
                 size={50}
-              />
+              /> */}
               <View style={{marginLeft: 15, flexDirection: 'column'}}>
-                <Title style={styles.title}>John Doe</Title>
+                <Title style={styles.title}>{name?.toUpperCase()}</Title>
                 {/* <Caption style={styles.caption}>@j_doe</Caption> */}
               </View>
             </View>

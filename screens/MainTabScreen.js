@@ -18,6 +18,7 @@ import {View} from 'react-native-animatable';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import CardListScreen from './CardListScreen';
 import CardItemDetails from './CardItemDetails';
+import SettingsScreen from './SettingsScreen';
 
 const HomeStack = createStackNavigator();
 const NotificationStack = createStackNavigator();
@@ -26,7 +27,11 @@ const ProfileStack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
 
 const MainTabScreen = () => (
-  <Tab.Navigator initialRouteName="Home" activeColor="#fff">
+  <Tab.Navigator
+    initialRouteName="Home"
+    activeColor="#fff"
+    inactiveColor="#000"
+    barStyle={{backgroundColor: '#FF6347'}}>
     <Tab.Screen
       name="Home"
       component={HomeStackScreen}
@@ -38,14 +43,26 @@ const MainTabScreen = () => (
         ),
       }}
     />
-    <Tab.Screen
+    {/* <Tab.Screen
       name="Notifications"
       component={NotificationStackScreen}
       options={{
         tabBarLabel: 'Updates',
-        tabBarColor: '#1f65ff',
+        tabBarColor: '#FF6347',
         tabBarIcon: ({color}) => (
           <Icon name="ios-notifications" color={color} size={26} />
+        ),
+      }}
+    /> */}
+
+    <Tab.Screen
+      name="Explore"
+      component={ExploreScreen}
+      options={{
+        tabBarLabel: 'Menu',
+        tabBarColor: '#FF6347',
+        tabBarIcon: ({color}) => (
+          <Icon name="ios-pizza" color={color} size={26} />
         ),
       }}
     />
@@ -54,20 +71,9 @@ const MainTabScreen = () => (
       component={ProfileStackScreen}
       options={{
         tabBarLabel: 'Profile',
-        tabBarColor: '#694fad',
+        tabBarColor: '#FF6347',
         tabBarIcon: ({color}) => (
           <Icon name="ios-person" color={color} size={26} />
-        ),
-      }}
-    />
-    <Tab.Screen
-      name="Explore"
-      component={ExploreScreen}
-      options={{
-        tabBarLabel: 'Menu',
-        tabBarColor: '#d02860',
-        tabBarIcon: ({color}) => (
-          <Icon name="ios-pizza" color={color} size={26} />
         ),
       }}
     />
@@ -107,30 +113,30 @@ const HomeStackScreen = ({navigation}) => {
               />
             </View>
           ),
-          headerRight: () => (
-            <View style={{flexDirection: 'row', marginRight: 10}}>
-              <Icon.Button
-                name="ios-search"
-                size={25}
-                color={colors.text}
-                backgroundColor={colors.background}
-                onPress={() => {}}
-              />
-              <TouchableOpacity
-                style={{paddingHorizontal: 10, marginTop: 5}}
-                onPress={() => {
-                  navigation.navigate('Profile');
-                }}>
-                <Avatar.Image
-                  source={{
-                    uri:
-                      'https://api.adorable.io/avatars/80/abott@adorable.png',
-                  }}
-                  size={30}
-                />
-              </TouchableOpacity>
-            </View>
-          ),
+          // headerRight: () => (
+          //   <View style={{flexDirection: 'row', marginRight: 10}}>
+          //     <Icon.Button
+          //       name="ios-search"
+          //       size={25}
+          //       color={colors.text}
+          //       backgroundColor={colors.background}
+          //       onPress={() => {}}
+          //     />
+          //     {/* <TouchableOpacity
+          //       style={{paddingHorizontal: 10, marginTop: 5}}
+          //       onPress={() => {
+          //         navigation.navigate('Profile');
+          //       }}>
+          //       <Avatar.Image
+          //         source={{
+          //           uri:
+          //             'https://api.adorable.io/avatars/80/abott@adorable.png',
+          //         }}
+          //         size={30}
+          //       />
+          //     </TouchableOpacity> */}
+          //   </View>
+          // ),
         }}
       />
       <HomeStack.Screen
@@ -144,6 +150,17 @@ const HomeStackScreen = ({navigation}) => {
       <HomeStack.Screen
         name="CardItemDetails"
         component={CardItemDetails}
+        options={({route}) => ({
+          // title: route.params.title,
+          headerBackTitleVisible: false,
+          headerTitle: false,
+          headerTransparent: true,
+          headerTintColor: '#fff',
+        })}
+      />
+      <HomeStack.Screen
+        name="SettingScreen"
+        component={SettingsScreen}
         options={({route}) => ({
           // title: route.params.title,
           headerBackTitleVisible: false,
@@ -213,17 +230,17 @@ const ProfileStackScreen = ({navigation}) => {
               />
             </View>
           ),
-          headerRight: () => (
-            <View style={{marginRight: 10}}>
-              <MaterialCommunityIcons.Button
-                name="account-edit"
-                size={25}
-                backgroundColor={colors.background}
-                color={colors.text}
-                onPress={() => navigation.navigate('EditProfile')}
-              />
-            </View>
-          ),
+          // headerRight: () => (
+          //   <View style={{marginRight: 10}}>
+          //     <MaterialCommunityIcons.Button
+          //       name="account-edit"
+          //       size={25}
+          //       backgroundColor={colors.background}
+          //       color={colors.text}
+          //       onPress={() => navigation.navigate('EditProfile')}
+          //     />
+          //   </View>
+          // ),
         }}
       />
       <ProfileStack.Screen

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, SafeAreaView, StyleSheet} from 'react-native';
 import {
   Avatar,
@@ -14,36 +14,46 @@ import Share from 'react-native-share';
 
 import files from '../assets/filesBase64';
 import {ScrollView} from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-community/async-storage';
+import {baseUrl} from '../api/url';
 
 const ProfileScreen = () => {
-  const myCustomShare = async () => {
-    const shareOptions = {
-      message:
-        "Order your next meal from FoodFinder App. I've already ordered more than 10 meals on it.",
-      url: files.appLogo,
-      // urls: [files.image1, files.image2]
-    };
+  const [name, setName] = useState();
+  const [amount, setAmount] = useState();
+  const [order, setOrder] = useState();
 
-    try {
-      const ShareResponse = await Share.open(shareOptions);
-      console.log(JSON.stringify(ShareResponse));
-    } catch (error) {
-      console.log('Error => ', error);
-    }
+  useEffect(() => {
+    getData();
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      getData();
+    });
+
+    return willFocusSubscription;
+  }, []);
+
+  const getData = async () => {
+    const name = await AsyncStorage.getItem('name');
+    const id = await AsyncStorage.getItem('userId');
+
+    await fetch(`${baseUrl}/getUserExpense/${id}`, {method: 'GET'})
+      .then(res => res.json())
+      .then(res => {
+        if (res.err) return Alert.alert(res.err);
+        setName(name);
+        setAmount(res.totalMoney);
+        setOrder(res.orderCount);
+      })
+      .catch(err => {
+        return Alert.alert('something went wrong');
+      });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.userInfoSection}>
-          <View style={{flexDirection: 'row', marginTop: 15}}>
-            <Avatar.Image
-              source={{
-                uri: 'https://api.adorable.io/avatars/80/abott@adorable.png',
-              }}
-              size={80}
-            />
-            <View style={{marginLeft: 20}}>
+          <View style={{flexDirection: 'row'}}>
+            <View style={{marginLeft: 0}}>
               <Title
                 style={[
                   styles.title,
@@ -52,9 +62,8 @@ const ProfileScreen = () => {
                     marginBottom: 5,
                   },
                 ]}>
-                John Doe
+                {name?.toUpperCase()}
               </Title>
-              {/* <Caption style={styles.caption}>@j_doe</Caption> */}
             </View>
           </View>
         </View>
@@ -75,7 +84,7 @@ const ProfileScreen = () => {
           <View style={styles.row}>
             <Icon name="email" color="#777777" size={20} />
             <Text style={{color: '#777777', marginLeft: 20}}>
-              john_doe@email.com
+              user@email.com
             </Text>
           </View>
         </View>
@@ -89,34 +98,16 @@ const ProfileScreen = () => {
                 borderRightWidth: 1,
               },
             ]}>
-            <Title>₹140.50</Title>
-            <Caption>Wallet</Caption>
+            <Title>₹{amount}</Title>
+            <Caption>Expense</Caption>
           </View>
           <View style={styles.infoBox}>
-            <Title>12</Title>
+            <Title>{order}</Title>
             <Caption>Orders</Caption>
           </View>
         </View>
 
         <View style={styles.menuWrapper}>
-          <TouchableRipple onPress={() => {}}>
-            <View style={styles.menuItem}>
-              <Icon name="heart-outline" color="#FF6347" size={25} />
-              <Text style={styles.menuItemText}>Your Favorites</Text>
-            </View>
-          </TouchableRipple>
-          <TouchableRipple onPress={() => {}}>
-            <View style={styles.menuItem}>
-              <Icon name="credit-card" color="#FF6347" size={25} />
-              <Text style={styles.menuItemText}>Payment</Text>
-            </View>
-          </TouchableRipple>
-          <TouchableRipple onPress={myCustomShare}>
-            <View style={styles.menuItem}>
-              <Icon name="share-outline" color="#FF6347" size={25} />
-              <Text style={styles.menuItemText}>Tell Your Friends</Text>
-            </View>
-          </TouchableRipple>
           <TouchableRipple onPress={() => {}}>
             <View style={styles.menuItem}>
               <Icon name="account-check-outline" color="#FF6347" size={25} />
